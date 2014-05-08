@@ -1,0 +1,92 @@
+<?php
+/**
+ * Product media data template
+ *
+ * @see Mage_Catalog_Block_Product_View_Media
+ */
+
+/* @var $this Mage_Catalog_Block_Product_View_Media */
+?>
+<?php
+    $_product = $this->getProduct();
+    $_helper = $this->helper('catalog/output');
+
+    /* images may be as much as 700 pixels in size */
+    $_imageSize = 700;
+    /* 2x images will be 1400x1400 at largest -- increase zoom size appropriately */
+    $_zoomSize = 1800;
+?>
+<?php if ($_product->getImage() != 'no_selection' && $_product->getImage()): ?>
+<div class="product-image product-image-zoom">
+
+    <div class="product-image-gallery">
+        <img id="image-main"
+             class="gallery-image visible"
+             srcset="<?php echo $this->helper('catalog/image')->init($_product, 'image')->keepFrame(false)->constrainOnly(true)->resize($_imageSize); ?> 1x,
+                     <?php echo $this->helper('catalog/image')->init($_product, 'image')->keepFrame(false)->constrainOnly(true)->resize(2*$_imageSize); ?> 2x"
+             alt="<?php echo $this->escapeHtml($this->getImageLabel()) ?>"
+             title="<?php echo $this->escapeHtml($this->getImageLabel()); ?>"
+             data-zoom-image="<?php echo $this->helper('catalog/image')->init($_product, 'image')->keepFrame(false)->constrainOnly(true)->resize($_zoomSize); ?>" />
+
+        <?php
+            $i=0;
+            foreach ($this->getGalleryImages() as $_image):
+                $_imageUrl1x = (string)$this->helper('catalog/image')
+                                             ->init($_product, 'image', $_image->getFile())
+                                             ->keepFrame(false)
+                                             ->constrainOnly(true)
+                                             ->resize($_imageSize);
+                $_zoomUrl = (string)$this->helper('catalog/image')
+                                         ->init($_product, 'image', $_image->getFile())
+                                         ->keepFrame(false)
+                                         ->constrainOnly(true)
+                                         ->resize($_zoomSize);
+                $_imageUrl2x = (string)$this->helper('catalog/image')
+                                            ->init($_product, 'image', $_image->getFile())
+                                            ->keepFrame(false)
+                                            ->constrainOnly(true)
+                                            ->resize(2*$_imageSize);
+        ?>
+            <img id="image-<?php echo $i; ?>"
+                 class="gallery-image"
+                 srcset="<?php echo $_imageUrl1x; ?> 1x, <?php echo $_imageUrl2x; ?> 2x"
+                 data-zoom-image="<?php echo  $_zoomUrl; ?>" />
+        <?php
+            $i++;
+            endforeach;
+        ?>
+    </div>
+</div>
+
+<?php else: ?>
+<p class="product-image">
+    <?php
+        $_img = '<img src="'.$this->helper('catalog/image')->init($_product, 'image')->resize(265).'" alt="'.$this->escapeHtml($this->getImageLabel()).'" title="'.$this->escapeHtml($this->getImageLabel()).'" />';
+        echo $_helper->productAttribute($_product, $_img, 'image');
+    ?>
+</p>
+<?php endif; ?>
+<?php if (count($this->getGalleryImages()) > 0): ?>
+<div class="more-views">
+    <h2><?php echo $this->__('More Views') ?></h2>
+    <ul class="product-image-thumbs">
+    <?php $i=0; foreach ($this->getGalleryImages() as $_image): ?>
+        <?php
+        if (($filterClass = $this->getGalleryFilterHelper()) && ($filterMethod = $this->getGalleryFilterMethod()) && !Mage::helper($filterClass)->$filterMethod($_product, $_image)):
+            continue;
+        endif;
+        ?>
+        <?php $_thumbnailSize = 75; ?>
+        <li>
+            <a class="thumb-link" href="#" title="<?php echo $this->escapeHtml($_image->getLabel()) ?>" data-image-index="<?php echo $i; ?>">
+                <img srcset="<?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize($_thumbnailSize); ?> 1x,
+                             <?php echo $this->helper('catalog/image')->init($this->getProduct(), 'thumbnail', $_image->getFile())->resize(2*$_thumbnailSize); ?> 2x"
+                     width="75" height="75" alt="<?php echo $this->escapeHtml($_image->getLabel()) ?>" />
+            </a>
+        </li>
+    <?php $i++; endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>
+
+<?php echo $this->getChildHtml('after'); ?>

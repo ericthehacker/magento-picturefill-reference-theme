@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addJs"><name>picturefill/picturefill-2.0.0-beta.js</name></action>
+        </reference>
+    </default>
+</layout>

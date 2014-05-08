@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<theme>
+    <parent>rwd/enterprise</parent>
+    <layout>
+        <updates>
+            <picturefill>
+                <file>picturefill.xml</file>
+            </picturefill>
+        </updates>
+    </layout>
+</theme>
